@@ -1,0 +1,42 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false" >
+    <item
+    android:drawable="@drawable/tablet01"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet02"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet03"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet04"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet05"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet06"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet07"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet08"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet09"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet10"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet11"
+    android:duration="300"/>
+<item
+    android:drawable="@drawable/tablet12"
+    android:duration="300"/>
+
+
+
+</animation-list>
