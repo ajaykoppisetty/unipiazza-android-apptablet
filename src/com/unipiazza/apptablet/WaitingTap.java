@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -43,14 +41,14 @@ public class WaitingTap extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_waiting_tap);		
+		setContentView(R.layout.activity_waiting_tap);
 		ImageView gyroView = (ImageView) findViewById(R.id.taploop);
 		gyroView.setBackgroundResource(R.drawable.loop_animation);
 		AnimationDrawable gyroAnimation = (AnimationDrawable) gyroView.getBackground();
 		gyroAnimation.start();
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		PendingIntent pendingIntent = PendingIntent.getActivity(
-				  this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+				this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		if (mNfcAdapter == null) {
 			// Stop here, we definitely need NFC
 			Toast.makeText(this, "Questo dispositivo non supporta l'NFC", Toast.LENGTH_LONG).show();
@@ -58,8 +56,8 @@ public class WaitingTap extends Activity {
 			return;
 		}
 		if (!mNfcAdapter.isEnabled()) {
-			mTextView.setText("L'NFC è disabilitato, abilitalo e riavvia.");
-		} 
+			mTextView.setText("L'NFC ï¿½ disabilitato, abilitalo e riavvia.");
+		}
 		handleIntent(getIntent());
 	}
 
@@ -69,6 +67,7 @@ public class WaitingTap extends Activity {
 
 		setupForegroundDispatch(this, mNfcAdapter);
 	}
+
 	@Override
 	protected void onPause() {
 		/**
@@ -79,6 +78,7 @@ public class WaitingTap extends Activity {
 		stopForegroundDispatch(this, mNfcAdapter);
 		super.onPause();
 	}
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		/**
@@ -92,37 +92,41 @@ public class WaitingTap extends Activity {
 		 */
 		handleIntent(intent);
 	}
+
 	private void handleIntent(Intent intent) {
 		String action = intent.getAction();
-		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)||
-	            NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action) ||
+				NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 			String type = intent.getType();
-				Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);	
-				Log.v("value ", "TAG Preso : " + tag);
-				byte[] tag_id = tag.getId();
-				String tag_id_string = bytesToHex(tag_id);
-				Log.i("tag ID Appena preso", tag_id_string);
-				SharedPreferences sp19 = PreferenceManager
-						.getDefaultSharedPreferences(WaitingTap.this);
-				Editor edit19 = sp19.edit();
-				edit19.putString("tag_id_string", tag_id_string);
-				edit19.commit();
-				Log.i("tag ID", tag_id_string);
-				new NdefReaderTask().execute(tag);
-		} 
-		
+			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+			Log.v("value ", "TAG Preso : " + tag);
+			byte[] tag_id = tag.getId();
+			String tag_id_string = bytesToHex(tag_id);
+			Log.i("tag ID Appena preso", tag_id_string);
+			SharedPreferences sp19 = PreferenceManager
+					.getDefaultSharedPreferences(WaitingTap.this);
+			Editor edit19 = sp19.edit();
+			edit19.putString("tag_id_string", tag_id_string);
+			edit19.commit();
+			Log.i("tag ID", tag_id_string);
+			new NdefReaderTask().execute(tag);
+		}
+
 	}
-    final protected static char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-    public static String bytesToHex(byte[] bytes) {
-    	char[] hexChars = new char[bytes.length * 2];
-    	int v;
-    	for ( int j = 0; j < bytes.length; j++ ) {
-    		v = bytes[j] & 0xFF;
-    		hexChars[j * 2] = hexArray[v >>> 4];
-    		hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-    	}
-    	return new String(hexChars);
-    }
+
+	final protected static char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+	public static String bytesToHex(byte[] bytes) {
+		char[] hexChars = new char[bytes.length * 2];
+		int v;
+		for (int j = 0; j < bytes.length; j++) {
+			v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
+
 	/**
 	 * @param activity
 	 *            The corresponding {@link Activity} requesting the foreground
@@ -130,13 +134,13 @@ public class WaitingTap extends Activity {
 	 * @param adapter
 	 *            The {@link NfcAdapter} used for the foreground dispatch.
 	 */
-    public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
-        final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
-        String[][] techList = new String[][]{};
-        adapter.enableForegroundDispatch(activity, pendingIntent, null, techList);
-    }
+	public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+		final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
+		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
+		String[][] techList = new String[][] {};
+		adapter.enableForegroundDispatch(activity, pendingIntent, null, techList);
+	}
 
 	/**
 	 * @param activity
@@ -165,10 +169,9 @@ public class WaitingTap extends Activity {
 				if (ndefRecord.getTnf() == NdefRecord.TNF_WELL_KNOWN) {
 					try {
 						return readText(ndefRecord);
-					} 
-					catch (UnsupportedEncodingException e) {
+					} catch (UnsupportedEncodingException e) {
 						Log.e(TAG, "Unsupported Encoding", e);
-					}					
+					}
 				}
 			}
 			return null;
@@ -210,9 +213,10 @@ public class WaitingTap extends Activity {
 				String tag_id_string = sp19.getString("tag_id_string", "anon");
 				Log.v("value ", "tag_id_string : " + tag_id_string);
 				new SearchId().execute(tag_id_string);
-				
+
 			}
 		}
+
 		//JSON Ricerca ID
 		class SearchId extends AsyncTask<String, String, String> {
 			/**
@@ -232,15 +236,14 @@ public class WaitingTap extends Activity {
 			 * Ricerca ID
 			 * */
 			protected String doInBackground(String... res_array) {
-						SharedPreferences sp19 = PreferenceManager.getDefaultSharedPreferences(WaitingTap.this);
-						String tag_id_string = sp19.getString("tag_id_string", "anon");
-						List<NameValuePair> params = new ArrayList<NameValuePair>();
-						Log.v("value ", "Tag_Id_String da inviare : " + tag_id_string);
-						params.add(new BasicNameValuePair("hash_pass", tag_id_string));
-						Intent i = new Intent(WaitingTap.this, Home.class);
-						startActivity(i);
-						return tag_id_string;
+				SharedPreferences sp19 = PreferenceManager.getDefaultSharedPreferences(WaitingTap.this);
+				String tag_id_string = sp19.getString("tag_id_string", "anon");
+				List<NameValuePair> params = new ArrayList<NameValuePair>();
+				Log.v("value ", "Tag_Id_String da inviare : " + tag_id_string);
+				params.add(new BasicNameValuePair("hash_pass", tag_id_string));
+				return tag_id_string;
 			}
+
 			/**
 			 * After completing background task Dismiss the progress dialog
 			 * **/
@@ -251,11 +254,13 @@ public class WaitingTap extends Activity {
 					//Messaggio che compare sempre
 					//Toast.makeText(WaitingTap.this, file_url, Toast.LENGTH_LONG).show();
 				}
-								
+				Intent i = new Intent(WaitingTap.this, Home.class);
+				startActivity(i);
 			}
 
 		}
 	}
+
 	@Override
 	public void onBackPressed() {
 		//Non uscire, cane!

@@ -5,28 +5,47 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Home extends Activity {
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.Validator.ValidationListener;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.Required;
+
+public class Home extends Activity implements ValidationListener {
 	JSONParser jParser = new JSONParser();
 	// url per la ricerca dell'ID
-	private EditText name, surname, email;
+
+	@Required(order = 1, message = "Il nome è un campo obbligatorio!")
+	private EditText name;
+	@Required(order = 2, message = "Il cognome è un campo obbligatorio!")
+	private EditText surname;
+	@Required(order = 3, message = "L'email è un campo obbligatorio!")
+	@Email(order = 4, message = "Inserisci un indirizzo mail valido!")
+	private EditText email;
 	private Button mSubmit;
 	private NfcAdapter mNfcAdapter;
 	private SharedPreferences sp;
 	private String[][] techListsArray;
 	private PendingIntent pendingIntent;
+	private CheckBox mPortachiaviChekbox;
+
+	private Validator validator;
 	public static final String MIME_TEXT_PLAIN = "text/plain";
 
 	// Classe di controllo connessione
@@ -56,38 +75,31 @@ public class Home extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
 
-		sp = PreferenceManager.getDefaultSharedPreferences(Home.this);
-		String username = sp.getString("username", "");
-		String id_attivita = sp.getString("id_attivita", "");
-
-		if (!username.isEmpty() && !id_attivita.isEmpty()) {
-			Intent i = new Intent(Home.this, WaitingTap.class);
-			Log.d("value", "Home attività " + username + " con id_attivita = " + id_attivita + " avvenuto con successo!!");
-			finish();
-			startActivity(i);
-			Toast.makeText(Home.this, "Buongiorno " + username + "!", Toast.LENGTH_LONG).show();
-			return;
-		}
-
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		name = (EditText) findViewById(R.id.name);
 		surname = (EditText) findViewById(R.id.surname);
+		email = (EditText) findViewById(R.id.email);
 		mSubmit = (Button) findViewById(R.id.signup);
+		mPortachiaviChekbox = (CheckBox) findViewById(R.id.portachiavi_box);
+
+		validator = new Validator(this);
+		validator.setValidationListener(this);
+
+		mSubmit.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				validator.validate();
+			}
+		});
 	}
 
-	/**
-	 * Background Async Task per cercare l'ID facendo una chiamata HTTP
-	 * */
-	class LoadAllProducts extends AsyncTask<String, String, String> {
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-		}
-
-		@Override
-		protected String doInBackground(String... args) {
-			return null;
-		}
+	private SpannableStringBuilder createError(String error) {
+		int ecolor = Color.BLACK; // whatever color you want
+		ForegroundColorSpan fgcspan = new ForegroundColorSpan(ecolor);
+		SpannableStringBuilder ssbuilder = new SpannableStringBuilder(error);
+		ssbuilder.setSpan(fgcspan, 0, error.length(), 0);
+		return ssbuilder;
 	}
 
 	@Override
@@ -115,18 +127,19 @@ public class Home extends Activity {
 		mNfcAdapter.disableForegroundDispatch(this);
 	}
 
-
-	public void onNewIntent(Intent intent) {
-		Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		//do nothing
-		Log.v("UNIPIAZZA", "onNewIntent");
+	public void onValidationSucceeded() {
+		Toast.makeText(this, "Yay! we got it right!", Toast.LENGTH_SHORT).show();
 	}
 
-	private void prepareNFCIntercept() {
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		pendingIntent = PendingIntent.getActivity(
-				this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+	public void onValidationFailed(View failedView, Rule<?> failedRule) {
+		String message = failedRule.getFailureMessage();
 
-		techListsArray = new String[][] {};
+		if (failedView instanceof EditText) {
+			failedView.requestFocus();
+			((EditText) failedView).setError(message);
+		} else {
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+		}
 	}
+
 }
