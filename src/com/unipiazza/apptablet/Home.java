@@ -6,13 +6,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,6 +80,7 @@ public class Home extends Activity implements ValidationListener {
 		setContentView(R.layout.home);
 
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		prepareNFCIntercept();
 		name = (EditText) findViewById(R.id.name);
 		surname = (EditText) findViewById(R.id.surname);
 		email = (EditText) findViewById(R.id.email);
@@ -99,14 +98,6 @@ public class Home extends Activity implements ValidationListener {
 				validator.validate();
 			}
 		});
-	}
-
-	private SpannableStringBuilder createError(String error) {
-		int ecolor = Color.BLACK; // whatever color you want
-		ForegroundColorSpan fgcspan = new ForegroundColorSpan(ecolor);
-		SpannableStringBuilder ssbuilder = new SpannableStringBuilder(error);
-		ssbuilder.setSpan(fgcspan, 0, error.length(), 0);
-		return ssbuilder;
 	}
 
 	@Override
@@ -129,11 +120,6 @@ public class Home extends Activity implements ValidationListener {
 		finish();
 	}
 
-	public void onPause() {
-		super.onPause();
-		mNfcAdapter.disableForegroundDispatch(this);
-	}
-
 	public void onValidationSucceeded() {
 		pDialog = new ProgressDialog(Home.this);
 		pDialog.setMessage("Login in corso...");
@@ -154,7 +140,11 @@ public class Home extends Activity implements ValidationListener {
 					@Override
 					public void onFail(JsonObject result, Throwable e) {
 						pDialog.dismiss();
-						Toast.makeText(Home.this, "Errore nella registrazione", Toast.LENGTH_SHORT).show();
+						if (result == null || result.get("msg") == null)
+							Toast.makeText(Home.this, "Errore nella registrazione", Toast.LENGTH_SHORT).show();
+						else
+							Toast.makeText(Home.this, result.get("msg").getAsString(), Toast.LENGTH_SHORT).show();
+
 					}
 				});
 	}
@@ -168,6 +158,30 @@ public class Home extends Activity implements ValidationListener {
 		} else {
 			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	public void onPause() {
+		super.onPause();
+		mNfcAdapter.disableForegroundDispatch(this);
+	}
+
+	public void onResume() {
+		super.onResume();
+		mNfcAdapter.enableForegroundDispatch(this, pendingIntent, null, techListsArray);
+	}
+
+	public void onNewIntent(Intent intent) {
+		Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+		//do nothing
+		Log.v("UNIPIAZZA", "onNewIntent");
+	}
+
+	private void prepareNFCIntercept() {
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		pendingIntent = PendingIntent.getActivity(
+				this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+		techListsArray = new String[][] {};
 	}
 
 }

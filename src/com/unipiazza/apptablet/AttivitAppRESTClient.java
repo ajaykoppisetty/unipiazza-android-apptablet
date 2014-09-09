@@ -120,7 +120,7 @@ public class AttivitAppRESTClient {
 			, String surname, String email, boolean checked, boolean checkToken, final HttpCallback callback) {
 		JsonObject json = new JsonObject();
 		JsonObject jsonReceipt = new JsonObject();
-		jsonReceipt.addProperty("name", name);
+		jsonReceipt.addProperty("first_name", name);
 		jsonReceipt.addProperty("last_name", surname);
 		jsonReceipt.addProperty("email", email);
 		if (checked)
@@ -140,8 +140,8 @@ public class AttivitAppRESTClient {
 
 					@Override
 					public void onCompleted(Exception e, JsonObject result) {
-						Log.v("UNIPIAZZA", "postAuthenticate result=" + result);
-						Log.v("UNIPIAZZA", "postAuthenticate e=" + e);
+						Log.v("UNIPIAZZA", "postRegistration result=" + result);
+						Log.v("UNIPIAZZA", "postRegistration e=" + e);
 						if (e == null) {
 							try {
 								if (!result.get("error").getAsBoolean())
