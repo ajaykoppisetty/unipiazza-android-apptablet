@@ -3,7 +3,6 @@ package com.unipiazza.apptablet;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -28,7 +27,7 @@ public class AttivitAppRESTClient {
 		json.addProperty("grant_type", "password");
 		json.addProperty("email", email);
 		json.addProperty("password", password);
-		json.addProperty("scope", "shop");
+		json.addProperty("scope", "admin");
 
 		Ion.with(context)
 				.load(UnipiazzaParams.LOGIN_URL)
@@ -44,7 +43,10 @@ public class AttivitAppRESTClient {
 								String access_token = result.get("access_token").getAsString();
 								String refresh_token = result.get("refresh_token").getAsString();
 								int expires_in = result.get("expires_in").getAsInt();
-								getUser(context, access_token, refresh_token, expires_in, password, callback);
+								CurrentAdmin.getInstance().setAuthenticated(context
+										, access_token, refresh_token, expires_in
+										, password);
+								callback.onSuccess(result);
 							} catch (Exception ex) {
 								ex.printStackTrace();
 								callback.onFail(result, ex);
@@ -55,41 +57,6 @@ public class AttivitAppRESTClient {
 
 				});
 
-	}
-
-	private void getUser(final Context context, final String access_token
-			, final String refresh_token, final int expires_in, final String password
-			, final HttpCallback callback) {
-		Log.v("UNIPIAZZA", "getUser");
-
-		String url = UnipiazzaParams.ME_URL + "?access_token=" + access_token;
-
-		Ion.with(context)
-				.load(url)
-				.asJsonObject()
-				.setCallback(new FutureCallback<JsonObject>() {
-					@Override
-					public void onCompleted(Exception e, JsonObject result) {
-						Log.v("UNIPIAZZA", "result=" + result);
-						if (e == null) {
-							try {
-								String email = result.get("email").getAsString();
-								String first_name = result.get("name").getAsString();
-								int id = result.get("id").getAsInt();
-								JsonArray prizesJson = result.get("prizes").getAsJsonArray();
-
-								CurrentAdmin.getInstance().setAuthenticated(context, email, first_name
-										, access_token, refresh_token, expires_in
-										, id
-										, password);
-								callback.onSuccess(result);
-							} catch (Exception ex) {
-								ex.printStackTrace();
-								callback.onFail(result, ex);
-							}
-						}
-					}
-				});
 	}
 
 	public void refreshToken(final Context context, final String refresh_token, final HttpCallback callback) {
@@ -130,13 +97,14 @@ public class AttivitAppRESTClient {
 
 	}
 
-	public void postReceipts(final Context context, final int user_id, final double coins, final String hash_type, final boolean checkToken, final HttpCallback callback) {
+	public void postRegistration(final Context context, final String hash, final String name, final String surname
+			, final String email, final boolean checked, final boolean checkToken, final HttpCallback callback) {
 		if (checkToken) {
 			CurrentAdmin.getInstance().checkToken(context, new HttpCallback() {
 
 				@Override
 				public void onSuccess(JsonObject result) {
-					postReceiptsHttp(context, user_id, coins, hash_type, checkToken, callback);
+					postRegistrationHttp(context, hash, name, surname, email, checked, checkToken, callback);
 				}
 
 				@Override
@@ -145,21 +113,25 @@ public class AttivitAppRESTClient {
 
 			});
 		} else
-			postReceiptsHttp(context, user_id, coins, hash_type, checkToken, callback);
-
+			postRegistrationHttp(context, hash, name, surname, email, checked, checkToken, callback);
 	}
 
-	private void postReceiptsHttp(final Context context, final int user_id, final double coins, final String hash_type, boolean checkToken, final HttpCallback callback) {
+	protected void postRegistrationHttp(Context context, String hash, String name
+			, String surname, String email, boolean checked, boolean checkToken, final HttpCallback callback) {
 		JsonObject json = new JsonObject();
 		JsonObject jsonReceipt = new JsonObject();
-		jsonReceipt.addProperty("user_id", user_id);
-		jsonReceipt.addProperty("coins", coins);
-		jsonReceipt.addProperty("hash_type", hash_type);
-		json.add("receipt", jsonReceipt);
+		jsonReceipt.addProperty("name", name);
+		jsonReceipt.addProperty("last_name", surname);
+		jsonReceipt.addProperty("email", email);
+		if (checked)
+			jsonReceipt.addProperty("hash_keychain", hash);
+		else
+			jsonReceipt.addProperty("hash_card", hash);
+		json.add("user", jsonReceipt);
 
 		String url;
 		String access_token = CurrentAdmin.getInstance().getAccessToken(context);
-		url = UnipiazzaParams.RECEIPTS_URL + "?access_token=" + access_token;
+		url = UnipiazzaParams.REGISTER_URL + "?access_token=" + access_token;
 
 		Ion.with(context)
 				.load(url)
@@ -172,7 +144,10 @@ public class AttivitAppRESTClient {
 						Log.v("UNIPIAZZA", "postAuthenticate e=" + e);
 						if (e == null) {
 							try {
-								callback.onSuccess(result);
+								if (!result.get("error").getAsBoolean())
+									callback.onSuccess(result);
+								else
+									callback.onFail(result, e);
 							} catch (Exception ex) {
 								ex.printStackTrace();
 								callback.onFail(result, ex);
@@ -182,5 +157,4 @@ public class AttivitAppRESTClient {
 					}
 				});
 	}
-
 }

@@ -2,6 +2,7 @@ package com.unipiazza.apptablet;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.Validator.ValidationListener;
@@ -46,6 +48,10 @@ public class Home extends Activity implements ValidationListener {
 	private CheckBox mPortachiaviChekbox;
 
 	private Validator validator;
+
+	private String hash;
+
+	private ProgressDialog pDialog;
 	public static final String MIME_TEXT_PLAIN = "text/plain";
 
 	// Classe di controllo connessione
@@ -81,6 +87,7 @@ public class Home extends Activity implements ValidationListener {
 		email = (EditText) findViewById(R.id.email);
 		mSubmit = (Button) findViewById(R.id.signup);
 		mPortachiaviChekbox = (CheckBox) findViewById(R.id.portachiavi_box);
+		hash = getIntent().getExtras().getString("hash");
 
 		validator = new Validator(this);
 		validator.setValidationListener(this);
@@ -128,7 +135,28 @@ public class Home extends Activity implements ValidationListener {
 	}
 
 	public void onValidationSucceeded() {
-		Toast.makeText(this, "Yay! we got it right!", Toast.LENGTH_SHORT).show();
+		pDialog = new ProgressDialog(Home.this);
+		pDialog.setMessage("Login in corso...");
+		pDialog.setIndeterminate(false);
+		pDialog.setCancelable(true);
+		pDialog.show();
+		AttivitAppRESTClient.getInstance(Home.this).postRegistration(Home.this, hash, name.getText().toString()
+				, surname.getText().toString(), email.getText().toString()
+				, mPortachiaviChekbox.isChecked(), true, new HttpCallback() {
+
+					@Override
+					public void onSuccess(JsonObject result) {
+						pDialog.dismiss();
+						Toast.makeText(Home.this, "Utente registrato", Toast.LENGTH_SHORT).show();
+						finish();
+					}
+
+					@Override
+					public void onFail(JsonObject result, Throwable e) {
+						pDialog.dismiss();
+						Toast.makeText(Home.this, "Errore nella registrazione", Toast.LENGTH_SHORT).show();
+					}
+				});
 	}
 
 	public void onValidationFailed(View failedView, Rule<?> failedRule) {

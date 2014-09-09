@@ -176,7 +176,7 @@ public class Login extends Activity implements OnClickListener {
 					if (result != null && result.get("msg") != null)
 						Toast.makeText(Login.this, result.get("msg").getAsString(), Toast.LENGTH_LONG).show();
 					else if (e != null)
-						Toast.makeText(Login.this, e.toString(), Toast.LENGTH_LONG).show();
+						Toast.makeText(Login.this, "Errore con l'autenticazione", Toast.LENGTH_LONG).show();
 					pDialog.dismiss();
 				}
 			});

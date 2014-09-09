@@ -67,8 +67,8 @@ public class CurrentAdmin extends User {
 			callback.onSuccess(null);
 	}
 
-	public void setAuthenticated(Context context, String email, String first_name, String access_token
-			, String refresh_token, int expires_in, int id, String password) {
+	public void setAuthenticated(Context context, String access_token
+			, String refresh_token, int expires_in, String password) {
 		this.id = id;
 		this.first_name = first_name;
 		this.last_name = last_name;
@@ -78,7 +78,6 @@ public class CurrentAdmin extends User {
 		Editor edit = pref.edit();
 
 		edit.putString("access_token", access_token);
-		edit.putString("email", email);
 		edit.putString("password", password);
 		edit.putString("refresh_token", refresh_token);
 		edit.putInt("expires_in", expires_in);

@@ -247,14 +247,15 @@ public class WaitingTap extends Activity {
 			/**
 			 * After completing background task Dismiss the progress dialog
 			 * **/
-			protected void onPostExecute(String file_url) {
+			protected void onPostExecute(String tag_id_string) {
 				// dismiss the dialog once done
 				pDialog.dismiss();
-				if (file_url != null) {
+				if (tag_id_string != null) {
 					//Messaggio che compare sempre
 					//Toast.makeText(WaitingTap.this, file_url, Toast.LENGTH_LONG).show();
 				}
 				Intent i = new Intent(WaitingTap.this, Home.class);
+				i.putExtra("hash", tag_id_string);
 				startActivity(i);
 			}
 
