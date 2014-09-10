@@ -122,13 +122,13 @@ public class Home extends Activity implements ValidationListener {
 
 	public void onValidationSucceeded() {
 		pDialog = new ProgressDialog(Home.this);
-		pDialog.setMessage("Login in corso...");
+		pDialog.setMessage("Registrazione utente in corso...");
 		pDialog.setIndeterminate(false);
 		pDialog.setCancelable(true);
 		pDialog.show();
 		AttivitAppRESTClient.getInstance(Home.this).postRegistration(Home.this, hash, name.getText().toString()
 				, surname.getText().toString(), email.getText().toString()
-				, mPortachiaviChekbox.isChecked(), true, new HttpCallback() {
+				, mPortachiaviChekbox.isChecked(), new HttpCallback() {
 
 					@Override
 					public void onSuccess(JsonObject result) {

@@ -6,10 +6,10 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 public class AttivitAppRESTClient {
 	private static AttivitAppRESTClient instance;
-	private static Object lock = new Object();
 
 	public static AttivitAppRESTClient getInstance(Context context) {
 		if (instance == null) {
@@ -65,6 +65,7 @@ public class AttivitAppRESTClient {
 		JsonObject json = new JsonObject();
 		json.addProperty("grant_type", "refresh_token");
 		json.addProperty("refresh_token", refresh_token);
+		Log.v("UNIPIAZZA", "refresh_token=" + refresh_token);
 
 		Ion.with(context)
 				.load(UnipiazzaParams.LOGIN_URL)
@@ -98,26 +99,7 @@ public class AttivitAppRESTClient {
 	}
 
 	public void postRegistration(final Context context, final String hash, final String name, final String surname
-			, final String email, final boolean checked, final boolean checkToken, final HttpCallback callback) {
-		if (checkToken) {
-			CurrentAdmin.getInstance().checkToken(context, new HttpCallback() {
-
-				@Override
-				public void onSuccess(JsonObject result) {
-					postRegistrationHttp(context, hash, name, surname, email, checked, checkToken, callback);
-				}
-
-				@Override
-				public void onFail(JsonObject result, Throwable e) {
-				}
-
-			});
-		} else
-			postRegistrationHttp(context, hash, name, surname, email, checked, checkToken, callback);
-	}
-
-	protected void postRegistrationHttp(Context context, String hash, String name
-			, String surname, String email, boolean checked, boolean checkToken, final HttpCallback callback) {
+			, final String email, final boolean checked, final HttpCallback callback) {
 		JsonObject json = new JsonObject();
 		JsonObject jsonReceipt = new JsonObject();
 		jsonReceipt.addProperty("first_name", name);
@@ -136,24 +118,42 @@ public class AttivitAppRESTClient {
 		Ion.with(context)
 				.load(url)
 				.setJsonObjectBody(json)
-				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
-
+				.asJsonObject()
+				.withResponse()
+				.setCallback(new FutureCallback<Response<JsonObject>>() {
 					@Override
-					public void onCompleted(Exception e, JsonObject result) {
-						Log.v("UNIPIAZZA", "postRegistration result=" + result);
-						Log.v("UNIPIAZZA", "postRegistration e=" + e);
+					public void onCompleted(Exception e, Response<JsonObject> result) {
 						if (e == null) {
+							Log.v("UNIPIAZZA", "postRegistration=" + result.getResult());
+							if (result.getHeaders().getResponseCode() == 401) {
+								refreshToken(context, CurrentAdmin.getInstance().getRefreshToken(context), new HttpCallback() {
+
+									@Override
+									public void onSuccess(JsonObject result) {
+										postRegistration(context, hash, name, surname, email, checked, callback);
+									}
+
+									@Override
+									public void onFail(JsonObject result, Throwable e) {
+										callback.onFail(result, e);
+									}
+								});
+								return;
+							}
 							try {
-								if (!result.get("error").getAsBoolean())
-									callback.onSuccess(result);
+								if (!result.getResult().get("error").getAsBoolean())
+									callback.onSuccess(result.getResult());
 								else
-									callback.onFail(result, e);
+									callback.onFail(result.getResult(), e);
 							} catch (Exception ex) {
 								ex.printStackTrace();
-								callback.onFail(result, ex);
+								callback.onFail(result.getResult(), ex);
 							}
 						} else
-							callback.onFail(result, e);
+						if (result != null)
+							callback.onFail(result.getResult(), e);
+						else
+							callback.onFail(null, e);
 					}
 				});
 	}

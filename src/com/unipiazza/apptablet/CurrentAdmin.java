@@ -6,9 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
-import com.google.gson.JsonObject;
 
 public class CurrentAdmin extends User {
 
@@ -42,31 +39,6 @@ public class CurrentAdmin extends User {
 			callback.onFail(null, null);
 	}
 
-	public void checkToken(Context context, final HttpCallback callback) {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-		int expires_in = pref.getInt("expires_in", 0);
-		long token_date = pref.getLong("token_date", 0);
-		Log.v("UNIPIAZZA", "System.currentTimeMillis() - token_date=" + (System.currentTimeMillis() - token_date));
-		Log.v("UNIPIAZZA", "expires_in=" + expires_in);
-
-		if (System.currentTimeMillis() - token_date >= expires_in) {
-			String refresh_token = pref.getString("refresh_token", "");
-			AttivitAppRESTClient.getInstance(context).refreshToken(context, refresh_token, new HttpCallback() {
-
-				@Override
-				public void onSuccess(JsonObject result) {
-					callback.onSuccess(result);
-				}
-
-				@Override
-				public void onFail(JsonObject result, Throwable e) {
-					callback.onFail(result, e);
-				}
-			});
-		} else
-			callback.onSuccess(null);
-	}
-
 	public void setAuthenticated(Context context, String access_token
 			, String refresh_token, int expires_in, String password) {
 		this.id = id;
@@ -80,6 +52,7 @@ public class CurrentAdmin extends User {
 		edit.putString("access_token", access_token);
 		edit.putString("password", password);
 		edit.putString("refresh_token", refresh_token);
+		edit.putLong("token_date", System.currentTimeMillis());
 		edit.putInt("expires_in", expires_in);
 		edit.putInt("id_attivita", id);
 		edit.commit();
@@ -98,6 +71,11 @@ public class CurrentAdmin extends User {
 	public String getAccessToken(Context context) {
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 		return pref.getString("access_token", "");
+	}
+
+	public String getRefreshToken(Context context) {
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+		return pref.getString("refresh_token", "");
 	}
 
 	public void logout(Context context) {
