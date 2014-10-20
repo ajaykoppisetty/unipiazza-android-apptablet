@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -50,6 +51,8 @@ public class Home extends Activity implements ValidationListener {
 	private String hash;
 
 	private ProgressDialog pDialog;
+
+	private RadioButton radio_female;
 	public static final String MIME_TEXT_PLAIN = "text/plain";
 
 	// Classe di controllo connessione
@@ -87,6 +90,7 @@ public class Home extends Activity implements ValidationListener {
 		mSubmit = (Button) findViewById(R.id.signup);
 		mPortachiaviChekbox = (CheckBox) findViewById(R.id.portachiavi_box);
 		hash = getIntent().getExtras().getString("hash");
+		radio_female = (RadioButton) findViewById(R.id.radio_female);
 
 		validator = new Validator(this);
 		validator.setValidationListener(this);
@@ -128,7 +132,7 @@ public class Home extends Activity implements ValidationListener {
 		pDialog.show();
 		AttivitAppRESTClient.getInstance(Home.this).postRegistration(Home.this, hash, name.getText().toString()
 				, surname.getText().toString(), email.getText().toString()
-				, mPortachiaviChekbox.isChecked(), new HttpCallback() {
+				, mPortachiaviChekbox.isChecked(), radio_female.isChecked(), new HttpCallback() {
 
 					@Override
 					public void onSuccess(JsonObject result) {

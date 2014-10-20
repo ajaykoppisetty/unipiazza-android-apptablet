@@ -49,6 +49,7 @@
             android:layout_marginTop="1dp"
             android:ems="14"
             android:hint="Indirizzo Email"
+            android:inputType="textEmailAddress"
             android:singleLine="true"
             android:textSize="32sp" />
 
@@ -60,6 +61,30 @@
             android:checked="true"
             android:text="Portachiavi"
             android:textColor="#fff" />
+
+        <RadioGroup
+            android:id="@+id/gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal"
+            android:textSize="16sp" >
+
+            <RadioButton
+                android:id="@+id/radio_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/profile_male"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/radio_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_female"
+                android:textSize="14sp" />
+        </RadioGroup>
 
         <Button
             android:id="@+id/signup"

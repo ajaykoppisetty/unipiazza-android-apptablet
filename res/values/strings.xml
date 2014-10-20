@@ -6,6 +6,8 @@
     <string name="password_textview">Password:</string>
     <string name="submit">Invia</string>
     <string name="homeTapp">In attesa di utenti...</string>
+    <string name="profile_male">Uomo</string>
+    <string name="profile_female">Donna</string>
 
     <!-- string ids for home.xml -->
     <string name="add_prodotti">AGGIUNGI PRODOTTI</string>
@@ -51,13 +53,12 @@
     <string name="no">Yeah!</string>
     <string name="saldo">Saldo</string>
     <string name="ok">OK!</string>
-   
-    
+
     <!-- Stringhe add_coins.xml -->
     <string name="button_width">50dp</string>
     <string name="button_height">60dp</string>
     <string name="del">Bottone Del</string>
-     <string name="num_00">00</string>
+    <string name="num_00">00</string>
     <string name="num_0">0</string>
     <string name="num_1">1</string>
     <string name="num_2">2</string>
@@ -74,8 +75,5 @@
     <color name="black">#000</color>
     <color name="blue">#00f</color>
     <color name="red">#f00</color>
-    
-    
-    
 
 </resources>

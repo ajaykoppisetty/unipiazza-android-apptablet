@@ -99,17 +99,18 @@ public class AttivitAppRESTClient {
 	}
 
 	public void postRegistration(final Context context, final String hash, final String name, final String surname
-			, final String email, final boolean checked, final HttpCallback callback) {
+			, final String email, final boolean checked, final boolean sex, final HttpCallback callback) {
 		JsonObject json = new JsonObject();
-		JsonObject jsonReceipt = new JsonObject();
-		jsonReceipt.addProperty("first_name", name);
-		jsonReceipt.addProperty("last_name", surname);
-		jsonReceipt.addProperty("email", email);
+		JsonObject jsonUser = new JsonObject();
+		jsonUser.addProperty("first_name", name);
+		jsonUser.addProperty("last_name", surname);
+		jsonUser.addProperty("email", email);
 		if (checked)
-			jsonReceipt.addProperty("hash_keychain", hash);
+			jsonUser.addProperty("hash_keychain", hash);
 		else
-			jsonReceipt.addProperty("hash_card", hash);
-		json.add("user", jsonReceipt);
+			jsonUser.addProperty("hash_card", hash);
+		jsonUser.addProperty("gender", sex);
+		json.add("user", jsonUser);
 
 		String url;
 		String access_token = CurrentAdmin.getInstance().getAccessToken(context);
@@ -130,7 +131,7 @@ public class AttivitAppRESTClient {
 
 									@Override
 									public void onSuccess(JsonObject result) {
-										postRegistration(context, hash, name, surname, email, checked, callback);
+										postRegistration(context, hash, name, surname, email, checked, sex, callback);
 									}
 
 									@Override
