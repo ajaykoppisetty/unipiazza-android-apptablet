@@ -53,14 +53,30 @@
             android:singleLine="true"
             android:textSize="32sp" />
 
-        <CheckBox
-            android:id="@+id/portachiavi_box"
-            android:layout_width="wrap_content"
+        <RadioGroup
+            android:id="@+id/pass"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
-            android:checked="true"
-            android:text="Portachiavi"
-            android:textColor="#fff" />
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal"
+            android:textSize="16sp" >
+
+            <RadioButton
+                android:id="@+id/radio_portachiavi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/radio_portachiavi"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/radio_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_card"
+                android:textSize="14sp" />
+        </RadioGroup>
 
         <RadioGroup
             android:id="@+id/gender"

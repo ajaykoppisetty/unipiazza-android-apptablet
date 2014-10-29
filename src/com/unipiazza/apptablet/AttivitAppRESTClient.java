@@ -109,6 +109,7 @@ public class AttivitAppRESTClient {
 			jsonUser.addProperty("hash_keychain", hash);
 		else
 			jsonUser.addProperty("hash_card", hash);
+
 		jsonUser.addProperty("gender", sex);
 		json.add("user", jsonUser);
 

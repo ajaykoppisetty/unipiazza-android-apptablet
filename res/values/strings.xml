@@ -8,6 +8,8 @@
     <string name="homeTapp">In attesa di utenti...</string>
     <string name="profile_male">Uomo</string>
     <string name="profile_female">Donna</string>
+    <string name="radio_portachiavi">Portachiavi</string>
+    <string name="radio_card">Carta</string>
 
     <!-- string ids for home.xml -->
     <string name="add_prodotti">AGGIUNGI PRODOTTI</string>

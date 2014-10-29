@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -44,7 +43,6 @@ public class Home extends Activity implements ValidationListener {
 	private SharedPreferences sp;
 	private String[][] techListsArray;
 	private PendingIntent pendingIntent;
-	private CheckBox mPortachiaviChekbox;
 
 	private Validator validator;
 
@@ -53,6 +51,9 @@ public class Home extends Activity implements ValidationListener {
 	private ProgressDialog pDialog;
 
 	private RadioButton radio_female;
+
+	private RadioButton radio_portachiavi;
+
 	public static final String MIME_TEXT_PLAIN = "text/plain";
 
 	// Classe di controllo connessione
@@ -88,7 +89,7 @@ public class Home extends Activity implements ValidationListener {
 		surname = (EditText) findViewById(R.id.surname);
 		email = (EditText) findViewById(R.id.email);
 		mSubmit = (Button) findViewById(R.id.signup);
-		mPortachiaviChekbox = (CheckBox) findViewById(R.id.portachiavi_box);
+		radio_portachiavi = (RadioButton) findViewById(R.id.radio_portachiavi);
 		hash = getIntent().getExtras().getString("hash");
 		radio_female = (RadioButton) findViewById(R.id.radio_female);
 
@@ -130,9 +131,10 @@ public class Home extends Activity implements ValidationListener {
 		pDialog.setIndeterminate(false);
 		pDialog.setCancelable(true);
 		pDialog.show();
+		Log.v("UNIPIAZZA", "radio_female=" + radio_female.isChecked());
 		AttivitAppRESTClient.getInstance(Home.this).postRegistration(Home.this, hash, name.getText().toString()
 				, surname.getText().toString(), email.getText().toString()
-				, mPortachiaviChekbox.isChecked(), radio_female.isChecked(), new HttpCallback() {
+				, radio_portachiavi.isChecked(), radio_female.isChecked(), new HttpCallback() {
 
 					@Override
 					public void onSuccess(JsonObject result) {
