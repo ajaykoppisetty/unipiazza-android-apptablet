@@ -115,7 +115,7 @@ public class AttivitAppRESTClient {
 		else
 			jsonUser.addProperty("hash_card", hash);
 
-		jsonUser.addProperty("gender", sex + "");
+		jsonUser.addProperty("gender", sex);
 		json.add("user", jsonUser);
 
 		String url;
