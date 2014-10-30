@@ -11,6 +11,9 @@ import com.koushikdutta.ion.Response;
 public class AttivitAppRESTClient {
 	private static AttivitAppRESTClient instance;
 
+	private static final String HEADER_STRING1 = "Accept";
+	private static final String HEADER_STRING2 = "application/unipiazza.v2";
+
 	public static AttivitAppRESTClient getInstance(Context context) {
 		if (instance == null) {
 			return new AttivitAppRESTClient();
@@ -31,6 +34,7 @@ public class AttivitAppRESTClient {
 
 		Ion.with(context)
 				.load(UnipiazzaParams.LOGIN_URL)
+				.addHeader(HEADER_STRING1, HEADER_STRING2)
 				.setJsonObjectBody(json)
 				.asJsonObject()
 				.setCallback(new FutureCallback<JsonObject>() {
@@ -69,6 +73,7 @@ public class AttivitAppRESTClient {
 
 		Ion.with(context)
 				.load(UnipiazzaParams.LOGIN_URL)
+				.addHeader(HEADER_STRING1, HEADER_STRING2)
 				.setJsonObjectBody(json)
 				.asJsonObject()
 				.setCallback(new FutureCallback<JsonObject>() {
@@ -110,7 +115,7 @@ public class AttivitAppRESTClient {
 		else
 			jsonUser.addProperty("hash_card", hash);
 
-		jsonUser.addProperty("gender", sex);
+		jsonUser.addProperty("gender", sex + "");
 		json.add("user", jsonUser);
 
 		String url;
@@ -119,6 +124,7 @@ public class AttivitAppRESTClient {
 
 		Ion.with(context)
 				.load(url)
+				.addHeader(HEADER_STRING1, HEADER_STRING2)
 				.setJsonObjectBody(json)
 				.asJsonObject()
 				.withResponse()

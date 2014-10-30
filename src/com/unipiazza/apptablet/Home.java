@@ -131,7 +131,6 @@ public class Home extends Activity implements ValidationListener {
 		pDialog.setIndeterminate(false);
 		pDialog.setCancelable(true);
 		pDialog.show();
-		Log.v("UNIPIAZZA", "radio_female=" + radio_female.isChecked());
 		AttivitAppRESTClient.getInstance(Home.this).postRegistration(Home.this, hash, name.getText().toString()
 				, surname.getText().toString(), email.getText().toString()
 				, radio_portachiavi.isChecked(), radio_female.isChecked(), new HttpCallback() {
